@@ -9,7 +9,7 @@ metadata:
   # https://github.com/kubernetes/autoscaler/pull/3968
   name: gitpod
   # Template, please change
-  region: us-west-2
+  region: ca-central-1
   version: "1.21"
 
 iam:
@@ -33,9 +33,9 @@ iam:
         autoScaler: true
 
 availabilityZones:
-  - us-west-2a
-  - us-west-2b
-  - us-west-2c
+  - ca-central-1a
+  - ca-central-1b
+  - ca-central-1d
 
 # By default we create a dedicated VPC for the cluster
 # You can use an existing VPC by supplying private and/or public subnets. Please check
@@ -61,7 +61,7 @@ privateCluster:
 
 managedNodeGroups:
   - name: workspaces
-    desiredCapacity: 1
+    desiredCapacity: 2
     minSize: 1
     maxSize: 10
     # because of AWS addons
@@ -69,15 +69,15 @@ managedNodeGroups:
     # Please configure the size of the volume and additional features
     # https://eksctl.io/usage/schema/#nodeGroups-volumeType
     # https://aws.amazon.com/es/ebs/pricing/
-    volumeSize: 300
+    volumeSize: 100
     volumeType: gp3
-    volumeIOPS: 6000
-    volumeThroughput: 500
+    volumeIOPS: 3000
+    volumeThroughput: 200
     ebsOptimized: true
     # Use private subnets for nodes
     # https://eksctl.io/usage/vpc-networking/#use-private-subnets-for-initial-nodegroup
     privateNetworking: true
-    ami: ami-009935ddbb32a7f3c
+    ami: ami-0727a82d128e8da20
 
     tags:
       # EC2 tags required for cluster-autoscaler auto-discovery
@@ -114,13 +114,13 @@ managedNodeGroups:
       export KUBELET_EXTRA_ARGS="$(printf -- "--max-pods=110 --node-labels=%s" $(IFS=$','; echo "${LABELS[*]}"))"
       /etc/eks/bootstrap.sh ${CLUSTERNAME}
 
-    spot: false
+    spot: true
     # https://eksctl.io/usage/instance-selector/
     #instanceSelector:
     #  vCPUs: 8
     #  memory: 64Gib
     # or use a custom list
-    instanceTypes: ["m6i.xlarge", "m6i.2xlarge"]
+    instanceTypes: ["t2.large", "t3.xlarge"]
 
   - name: services
     desiredCapacity: 1
@@ -131,15 +131,15 @@ managedNodeGroups:
     # Please configure the size of the volume and additional features
     # https://eksctl.io/usage/schema/#nodeGroups-volumeType
     # https://aws.amazon.com/es/ebs/pricing/
-    volumeSize: 100
+    volumeSize: 50
     volumeType: gp3
-    volumeIOPS: 6000
-    volumeThroughput: 500
+    volumeIOPS: 1000
+    volumeThroughput: 200
     ebsOptimized: true
     # Use private subnets for nodes
     # https://eksctl.io/usage/vpc-networking/#use-private-subnets-for-initial-nodegroup
     privateNetworking: true
-    ami: ami-009935ddbb32a7f3c
+    ami: ami-0727a82d128e8da20
 
     tags:
       # EC2 tags required for cluster-autoscaler auto-discovery
@@ -165,10 +165,10 @@ managedNodeGroups:
       export KUBELET_EXTRA_ARGS="$(printf -- "--max-pods=110 --node-labels=%s" $(IFS=$','; echo "${LABELS[*]}"))"
       /etc/eks/bootstrap.sh ${CLUSTERNAME}
 
-    spot: false
+    spot: true
     # https://eksctl.io/usage/instance-selector/
     #instanceSelector:
     #  vCPUs: 4
     #  memory: 16Gib
     # or use a custom list
-    instanceTypes: ["m6i.xlarge", "m6i.2xlarge"]
+    instanceTypes: ["t2.large", "t3.xlarge"]
